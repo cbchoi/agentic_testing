@@ -3,7 +3,7 @@ import sys
 
 # [품질 결함 1] 물리 연산 오류: 공이 패들에 닿아도 각도 계산 없이 무조건 위로만 튕김
 def calculate_reflection(ball_rect, paddle_rect):
-    return -1 
+    return -1
 
 def run_game():
     pygame.init()
