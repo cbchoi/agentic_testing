@@ -42,11 +42,33 @@ CUSTOM_QUALITY_SPEC = {
     }
 }
 
-def get_quality_prompt():
-    prompt = "### [범용 게임 품질 검증 및 코드 증명 명세서]\n"
-    prompt += "너는 아래 지침에 따라 단순히 설명하는 것이 아니라 '실행 데이터'와 '로그'로 품질을 증명해야 한다.\n"
-    for category, details in CUSTOM_QUALITY_SPEC.items():
-        prompt += f"\n**{category}**\n"
-        for key, value in details.items():
-            prompt += f" - {key}: {value.strip()}\n"
-    return prompt
+def get_quality_prompt(project_type="game"):
+    # 1. 수치 기준 설정
+    standards = {
+        "game": {"fps_min": 30, "loc_limit": 50, "complexity_limit": 15},
+        "web_api": {"response_time_ms": 500, "loc_limit": 30, "complexity_limit": 10}
+    }
+    selected = standards.get(project_type, standards["game"])
+    
+    # 2. CUSTOM_QUALITY_SPEC 내용을 텍스트로 변환
+    spec_text = ""
+    for category, content in CUSTOM_QUALITY_SPEC.items():
+        spec_text += f"\n[{category}]\n"
+        for key, value in content.items():
+            spec_text += f"- {key}: {value}\n"
+
+    # 3. 최종 프롬프트 결합
+    return f"""
+    당신은 {project_type} 프로젝트의 품질 인증 심사원입니다. 
+    아래의 [국제 표준 및 행동 지침]과 [수치 기준]을 결합하여 분석을 수행하십시오.
+
+    [1. 수치 판정 절대 기준]
+    - 성능: 측정값이 {selected.get('fps_min', selected.get('response_time_ms'))} 이상(또는 이하)일 것.
+    - 유지보수성: 함수의 실질 코드 라인수가 {selected['loc_limit']}줄 이하일 것.
+    - 코드 복잡도: 순환 복잡도 지수가 {selected['complexity_limit']} 이하일 것.
+
+    [2. 상세 행동 지침 및 검증 항목]{spec_text}
+
+    판정 시 실제 측정값(n)을 기준치와 비교하여 'Pass' 또는 'Fail'을 부여하고, 
+    반드시 '데이터 근거' 섹션에 측정된 수치나 발견된 코드 라인을 명시하십시오.
+    """
