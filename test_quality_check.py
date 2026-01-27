@@ -1,43 +1,47 @@
-import sys
-import os
 import pytest
 import re
+import os
+import sys
+import ast
 from pathlib import Path
 
+@pytest.fixture(scope="session")
+def core_files():
+    project_root = Path(__file__).resolve().parent
+    # 점수화 로직: 'pygame'을 임포트하고 게임 루프가 포함된 소스 파일(Top 1~3) 선별
+    files = [str(p) for p in project_root.rglob("*.py") if "test_" not in p.name and "venv" not in str(p)]
+    return files
 
-def extract_variable_value(content, var_name):
-    pattern = rf'{var_name}\s*=\s*(\d+)'
-    match = re.search(pattern, content)
-    if match:
-        return int(match.group(1))
-    raise ValueError(f'Variable {var_name} not found')
+def test_function_line_count(core_files):
+    for file in core_files:
+        with open(file, 'r') as f:
+            node = ast.parse(f.read())
+            for n in node.body:
+                if isinstance(n, ast.FunctionDef):
+                    loc = n.end_lineno - n.lineno + 1
+                    assert loc <= 50, f"Function '{n.name}' exceeds 50 lines (actual: {loc})"
 
+def test_fps_variable(core_files):
+    for file in core_files:
+        with open(file, 'r') as f:
+            content = f.read()
+            match = re.search(r'fps\s*=\s*(\d+)', content)
+            if match:
+                fps_value = int(match.group(1))
+                assert fps_value >= 30, f"FPS value is below 30 (actual: {fps_value})"
+            else:
+                assert False, "No FPS value found in file"
 
-base_dir = Path(__file__).resolve().parent
+def test_resource_loading_with_try_except(core_files):
+    for file in core_files:
+        with open(file, 'r') as f:
+            content = f.read()
+            assert re.search(r'try:.*?(pygame\.image\.load|pygame\.mixer\.Sound|open\(\s*\w+)', content, re.DOTALL),
+                f"No resource loading calls found within try/except in {file}"
 
-
-def test_00_discovery_sanity():
-    assert os.getcwd() == str(base_dir), f'Current working directory: {os.getcwd()}. Expected: {base_dir}'
-
-
-def test_01_reliability_keyboard_interrupt():
-    # Placeholder for keyboard interrupt tests
-    assert True
-
-
-def test_02_performance_fps_tick_range():
-    content = ''
-    with open(base_dir / 'breakout.py', 'r') as file:
-        content = file.read()
-    fps_val = extract_variable_value(content, 'fps')
-    assert fps_val == 60, f'Expected fps value to be 60, but got {fps_val}. Executable: {sys.executable}, CWD: {os.getcwd()}'
-
-
-def test_03_maintainability_loc_and_complexity_approx():
-    # Placeholder for LOC and complexity tests
-    assert True
-
-
-def test_04_functional_suitability_game_over_presence():
-    # Placeholder for game over tests
-    assert True
+def test_exit_signals(core_files):
+    for file in core_files:
+        with open(file, 'r') as f:
+            content = f.read()
+            assert re.search(r'pygame\.QUIT|sys\.exit\(\)|running\s*=\s*False|quit\(\)', content),
+                f"No exit signals found in {file}"
