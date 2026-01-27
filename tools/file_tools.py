@@ -16,10 +16,26 @@ class ReadFileTool(BaseTool):
     name: str = "read_file"
     description: str = "파일의 내용을 읽어오는 도구입니다. 인자로 file_path를 받습니다."
 
+    def __init__(self, allowed_root: str = None, **kwargs):
+        super().__init__(**kwargs)
+        self._allowed_root = Path(allowed_root).resolve() if allowed_root else None
+
     def _run(self, file_path: str) -> str:
-        p = file_path.strip()
+        p = (file_path or "").strip()
         try:
-            with open(p, "r", encoding="utf-8", errors="ignore") as f:
+            fp = Path(p).resolve()
+
+            if self._allowed_root:
+                try:
+                    fp.relative_to(self._allowed_root)
+                except ValueError:
+                    return (
+                        "[READ_FILE_DENIED]\n"
+                        f"allowed_root={self._allowed_root}\n"
+                        f"requested={fp}"
+                    )
+
+            with open(fp, "r", encoding="utf-8", errors="ignore") as f:
                 return f.read()
         except Exception as e:
             return f"[READ_FILE_ERROR] path={p} error={type(e).__name__}: {e}"
@@ -48,6 +64,10 @@ class WriteFileTool(BaseTool):
             return f"[WRITE_FILE_ERROR] error={type(e).__name__}: {e}"
 
 
+from pathlib import Path
+import os
+from crewai.tools import BaseTool  # 이미 쓰고 있는 BaseTool import 경로에 맞춰 유지
+
 class ListFilesTool(BaseTool):
     name: str = "list_files"
     description: str = (
@@ -55,15 +75,31 @@ class ListFilesTool(BaseTool):
         "인자: directory_path (예: 'target_apps/cloned_app')"
     )
 
+    def __init__(self, allowed_root: str = None, **kwargs):
+        super().__init__(**kwargs)
+        self._allowed_root = Path(allowed_root).resolve() if allowed_root else None
+
     def _run(self, directory_path: str) -> str:
-        base = directory_path.strip()
+        base = (directory_path or "").strip()
         try:
             base_path = Path(base).resolve()
+
             if not base_path.exists():
                 return f"[LIST_FILES_ERROR] path_not_found={base_path}"
 
             if not base_path.is_dir():
                 return f"[LIST_FILES_ERROR] not_a_directory={base_path}"
+
+            if self._allowed_root:
+                try:
+                    # base_path가 allowed_root 하위인지 판정
+                    base_path.relative_to(self._allowed_root)
+                except ValueError:
+                    return (
+                        "[LIST_FILES_DENIED]\n"
+                        f"allowed_root={self._allowed_root}\n"
+                        f"requested={base_path}"
+                    )
 
             exclude_dir_names = {"venv", ".git", "__pycache__", ".pytest_cache", ".mypy_cache"}
             exclude_path_parts = {os.sep + n + os.sep for n in exclude_dir_names}
@@ -121,13 +157,23 @@ class RunPytestTool(BaseTool):
     name: str = "run_pytest"
     description: str = (
         "pytest를 실행하고 결과(exit_code/stdout/stderr)와 환경정보를 반환합니다.\n"
-        "인자 예) 'test_quality_check.py -q' 또는 '-q'"
+        "입력 형식: 'base_dir|args'\n"
+        "예) 'target_apps/space_invaders|test_quality_check.py -q'\n"
+        "예) 'target_apps/breakout|-q'\n"
     )
 
-    def _run(self, args: str = "") -> str:
-        base_dir = os.path.abspath("target_apps/cloned_app")
-
+    def _run(self, data: str = "") -> str:
         try:
+            if "|" not in (data or ""):
+                return "[RUN_PYTEST_ERROR] format must be 'base_dir|args'"
+
+            base_dir_raw, args_raw = data.split("|", 1)
+            base_dir = os.path.abspath(base_dir_raw.strip())
+            args = (args_raw or "").strip()
+
+            if not os.path.isdir(base_dir):
+                return f"[RUN_PYTEST_ERROR] base_dir_not_found={base_dir}"
+
             py = sys.executable
 
             version = subprocess.run(
@@ -140,8 +186,8 @@ class RunPytestTool(BaseTool):
             )
 
             cmd = [py, "-m", "pytest"]
-            if args and args.strip():
-                cmd += args.strip().split()
+            if args:
+                cmd += args.split()
 
             result = subprocess.run(
                 cmd,

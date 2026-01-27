@@ -1,0 +1,88 @@
+{
+  "standard": "ISO/IEC 25010",
+  "generated_at": "2026-01-27T14:17:07.422142+00:00",
+  "summary": {
+    "score": 0.45,
+    "grade": "미흡",
+    "overall_pass": false,
+    "passed_weight": 0.45,
+    "total_weight": 1.0
+  },
+  "characteristics": [
+    {
+      "id": "Maintainability.FunctionLOC",
+      "type": "static",
+      "characteristic": "Maintainability",
+      "metric": null,
+      "measured": "file=spaceinvaders.py; func=main; evidence=LOC=56",
+      "rule": "function_loc <= 50 for all functions",
+      "method": "AST: end_lineno - lineno + 1 per FunctionDef",
+      "pass": false,
+      "evidence": {
+        "verification_target": null
+      },
+      "weight": 0.25
+    },
+    {
+      "id": "Maintainability.MainLoopComplexity",
+      "type": "static",
+      "characteristic": "Maintainability",
+      "metric": null,
+      "measured": "file=spaceinvaders.py; func=main; evidence=branch_count=8; nesting_depth=5; cyclomatic_proxy=15",
+      "rule": "branch_count<=25 AND nesting_depth<=4 AND cyclomatic_proxy<=20",
+      "method": "AST: analyze largest top-level While node",
+      "pass": false,
+      "evidence": {
+        "verification_target": null
+      },
+      "weight": 0.15
+    },
+    {
+      "id": "PerformanceEfficiency.TimeBehaviour",
+      "type": "static",
+      "characteristic": "PerformanceEfficiency",
+      "metric": null,
+      "measured": "file=spaceinvaders.py; func=main; evidence=clock.tick(60)",
+      "rule": "resolved_fps >= 30",
+      "method": "AST: resolve clock.tick(arg) where arg is constant or traced assignment",
+      "pass": true,
+      "evidence": {
+        "verification_target": null
+      },
+      "weight": 0.25
+    },
+    {
+      "id": "Reliability.FaultTolerance.ResourceLoading",
+      "type": "static",
+      "characteristic": "Reliability",
+      "metric": null,
+      "measured": "file=spaceinvaders.py; evidence=pygame.image.load without try/except",
+      "rule": "all resource loading calls must be within try/except",
+      "method": "AST: detect pygame.image.load / pygame.mixer.Sound / open(...) and check try scope",
+      "pass": false,
+      "evidence": {
+        "verification_target": null
+      },
+      "weight": 0.15
+    },
+    {
+      "id": "FunctionalSuitability.StateTransitionValidation.ExitSignals",
+      "type": "static",
+      "characteristic": "FunctionalSuitability",
+      "metric": null,
+      "measured": "file=spaceinvaders.py; evidence=sys.exit() found",
+      "rule": "at least one exit signal exists",
+      "method": "Text scan: pygame.QUIT, sys.exit, running=False, quit()",
+      "pass": true,
+      "evidence": {
+        "verification_target": null
+      },
+      "weight": 0.2
+    }
+  ],
+  "run_log": {
+    "exit_code": 1,
+    "stdout": "======================================================\n    FAILED TESTS\n======================================================\n________________________________________ test_function_line_count _______________________________\n\nfile=spaceinvaders.py; func=main; evidence=LOC=56\n\n    assert loc <= 50, f\"Function '{n.name}' in '{file}' has {loc} lines, which exceeds the 50 lines limit.\"\n\nAssertionError: Function 'main' in 'spaceinvaders.py' has 56 lines, which exceeds the 50 lines limit.\n\n_____________________________________________ test_fps _____________________________________________\n\nfile=spaceinvaders.py; func=main; evidence=FPS is 60\n\n    assert fps_value >= 30, f\"FPS is {fps_value}, should be at least 30.\"\n\n________________________________________ test_reliability _________________________________________\n\nfile=spaceinvaders.py; evidence=pygame.image.load without try/except\n\n    assert 'try:' in content, f\"No 'try' block found in '{file}'.\"\n\nAssertionError: No 'try' block found in 'spaceinvaders.py'.\n\n________________________________________ test_functionality ________________________________________\n\nfile=spaceinvaders.py; evidence=sys.exit() found\n\n    assert any(signal in content for signal in ['pygame.QUIT', 'sys.exit()', 'running = False']), f\"No exit signal found in '{file}'.\"\n\n======================================================\n  4 failed, 0 passed, 1 warnings in 0.20s\n======================================================",
+    "stderr": ""
+  }
+}

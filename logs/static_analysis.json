@@ -1,0 +1,51 @@
+[
+  {
+    "id": "Maintainability.FunctionLOC",
+    "quality_feature": "Maintainability",
+    "decision_rule": "function_loc <= 50 for all functions",
+    "measurement_method": "AST: end_lineno - lineno + 1 per FunctionDef",
+    "measured": 56,
+    "final_judgment": "Fail",
+    "data_evidence": "file=spaceinvaders.py; func=main; evidence=LOC=56"
+  },
+  {
+    "id": "Maintainability.MainLoopComplexity",
+    "quality_feature": "Maintainability",
+    "decision_rule": "branch_count<=25 AND nesting_depth<=4 AND cyclomatic_proxy<=20",
+    "measurement_method": "AST: analyze largest top-level While node",
+    "measured": {
+      "branch_count": 8,
+      "nesting_depth": 5,
+      "cyclomatic_proxy": 15
+    },
+    "final_judgment": "Fail",
+    "data_evidence": "file=spaceinvaders.py; func=main; evidence=branch_count=8; nesting_depth=5; cyclomatic_proxy=15"
+  },
+  {
+    "id": "PerformanceEfficiency.TimeBehaviour",
+    "quality_feature": "PerformanceEfficiency",
+    "decision_rule": "resolved_fps >= 30",
+    "measurement_method": "AST: resolve clock.tick(arg) where arg is constant or traced assignment",
+    "measured": 60,
+    "final_judgment": "Pass",
+    "data_evidence": "file=spaceinvaders.py; func=main; evidence=clock.tick(60)"
+  },
+  {
+    "id": "Reliability.FaultTolerance.ResourceLoading",
+    "quality_feature": "Reliability",
+    "decision_rule": "all resource loading calls must be within try/except",
+    "measurement_method": "AST: detect pygame.image.load / pygame.mixer.Sound / open(...) and check try scope",
+    "measured": 5,
+    "final_judgment": "Fail",
+    "data_evidence": "file=spaceinvaders.py; evidence=pygame.image.load without try/except"
+  },
+  {
+    "id": "FunctionalSuitability.StateTransitionValidation.ExitSignals",
+    "quality_feature": "FunctionalSuitability",
+    "decision_rule": "at least one exit signal exists",
+    "measurement_method": "Text scan: pygame.QUIT, sys.exit, running=False, quit()",
+    "measured": 2,
+    "final_judgment": "Pass",
+    "data_evidence": "file=spaceinvaders.py; evidence=sys.exit() found"
+  }
+]
