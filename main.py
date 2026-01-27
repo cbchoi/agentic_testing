@@ -9,7 +9,7 @@ from quality_standards import get_quality_prompt, get_quality_spec, iso_spec
 
 load_dotenv()
 
-TARGET_DIR = "target_apps/space_invaders"
+TARGET_DIR = "target_apps/flappybird"
 TEST_FILE_REL = "test_quality_check.py"
 TEST_FILE_ABS = os.path.join(TARGET_DIR, TEST_FILE_REL)
 
@@ -20,6 +20,7 @@ RUN_ARTIFACTS_PATH = os.path.join(LOGS_DIR, "run_artifacts.json")
 RESULT_JSON_PATH = os.path.join(LOGS_DIR, "result.json")
 QUALITY_MD_PATH = os.path.join(LOGS_DIR, "quality_analysis_report.md")
 FINAL_MD_PATH = os.path.join(LOGS_DIR, "final_tc_report.md")
+RESULT_KV_JSON_PATH = os.path.join(LOGS_DIR, "result_kv.json")
 
 # ----------------------------------------------------------------
 # 1. Agents 설정: 페르소나와 전문성 강화
@@ -437,6 +438,57 @@ def build_result_json(
     render_md_reports(result, out_quality_md_path, out_final_md_path)
     return result
 
+def flatten_result_to_kv(result: dict) -> dict:
+    kv = {}
+
+    # meta
+    kv["standard"] = result.get("standard")
+    kv["generated_at"] = result.get("generated_at")
+    kv["target_dir"] = result.get("target_dir")
+
+    # summary
+    summary = result.get("summary") or {}
+    kv["summary.score"] = summary.get("score")
+    kv["summary.grade"] = summary.get("grade")
+    kv["summary.overall_pass"] = summary.get("overall_pass")
+    kv["summary.passed_weight"] = summary.get("passed_weight")
+    kv["summary.total_weight"] = summary.get("total_weight")
+
+    # checks
+    chs = result.get("characteristics") or []
+    for ch in chs:
+        cid = ch.get("id")
+        if not cid:
+            continue
+
+        kv[f"{cid}.pass"] = ch.get("pass")
+        kv[f"{cid}.weight"] = ch.get("weight")
+        kv[f"{cid}.rule"] = ch.get("rule")
+        kv[f"{cid}.method"] = ch.get("method")
+
+        measured = ch.get("measured")
+        if isinstance(measured, dict):
+            for k, v in measured.items():
+                kv[f"{cid}.measured.{k}"] = v
+        else:
+            kv[f"{cid}.measured"] = measured
+
+        # evidence (너는 지금 measured에 "file=... evidence=..."로 넣고 있어서 이것도 같이 저장)
+        ev = ch.get("evidence")
+        if isinstance(ev, dict):
+            for k, v in ev.items():
+                kv[f"{cid}.evidence.{k}"] = v
+        elif ev is not None:
+            kv[f"{cid}.evidence"] = ev
+
+    # run_log
+    run = result.get("run_log") or result.get("run") or {}
+    kv["run.exit_code"] = run.get("exit_code")
+    kv["run.stdout"] = run.get("stdout")
+    kv["run.stderr"] = run.get("stderr")
+
+    return kv
+
 
 def _render_reports_from_result(result_json_path: str, quality_md_path: str, final_md_path: str) -> None:
     if not os.path.exists(result_json_path):
@@ -542,6 +594,10 @@ def build_and_render_final_reports():
     with open(RESULT_JSON_PATH, "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
 
+    kv = flatten_result_to_kv(result)
+    with open(RESULT_KV_JSON_PATH, "w", encoding="utf-8") as f:
+        json.dump(kv, f, ensure_ascii=False, indent=2)
+
     # 4. 최종 마크다운 렌더링 호출
     render_md_reports(result, QUALITY_MD_PATH, FINAL_MD_PATH)
 
@@ -560,6 +616,8 @@ if __name__ == "__main__":
         print("\n### 모든 공정이 완료되었습니다!")
         print(f"- 최종 데이터: {RESULT_JSON_PATH}")
         print(f"- 통합 보고서: {FINAL_MD_PATH}")
+        print(f"- KV 데이터: {RESULT_KV_JSON_PATH}")
+
 
     except Exception as e:
         print(f"\n시스템 에러 발생: {e}")

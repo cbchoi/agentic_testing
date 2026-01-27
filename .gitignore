@@ -6,5 +6,4 @@ venv/
 __pycache__/
 *.pyc
 .DS_Store
-quality_analysis_report.md
-final_tc_report.md
+target_apps/
