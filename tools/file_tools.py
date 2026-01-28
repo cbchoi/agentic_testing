@@ -56,10 +56,45 @@ class WriteFileTool(BaseTool):
             if parent:
                 os.makedirs(parent, exist_ok=True)
 
-            with open(p, "w", encoding="utf-8", errors="ignore") as f:
-                f.write(content)
+            raw = content
+            if raw is None:
+                raw = ""
+            raw = str(raw).lstrip("\ufeff").strip()
 
-            return f"[WRITE_FILE_OK] path={p} bytes={len(content.encode('utf-8', errors='ignore'))}"
+            # 1) code fence 제거
+            raw = raw.replace("```python", "").replace("```", "").strip()
+
+            # 2) JSON으로 감싸진 경우 풀기: "....", {"code":"..."}, {"content":"..."} 등
+            try:
+                import json
+                obj = json.loads(raw)
+                if isinstance(obj, str):
+                    raw = obj
+                elif isinstance(obj, dict):
+                    for k in ("code", "content", "text", "source"):
+                        if isinstance(obj.get(k), str):
+                            raw = obj[k]
+                            break
+            except Exception:
+                pass
+
+            # 3) escape 문자열이 “문서 전체에 많이 있고”, 실제 줄바꿈이 거의 없으면 복원
+            real_newlines = raw.count("\n")
+            escaped_newlines = raw.count("\\n") + raw.count("\\r\\n")
+            if escaped_newlines >= 2 and real_newlines <= 1:
+                raw = raw.replace("\\r\\n", "\n").replace("\\n", "\n").replace("\\t", "\t")
+
+            # 4) import/from 시작점 강제 (앞에 잡문 붙는 케이스 제거)
+            import re
+            m = re.search(r"^(?:from\s+\S+\s+import\s+|import\s+\S+)", raw, flags=re.MULTILINE)
+            if m:
+                raw = raw[m.start():].lstrip()
+
+            # 5) 최종 저장
+            with open(p, "w", encoding="utf-8", errors="ignore") as f:
+                f.write(raw.rstrip() + "\n")
+
+            return f"[WRITE_FILE_OK] path={p} bytes={len(raw.encode('utf-8', errors='ignore'))}"
         except Exception as e:
             return f"[WRITE_FILE_ERROR] error={type(e).__name__}: {e}"
 
@@ -212,3 +247,66 @@ class RunPytestTool(BaseTool):
             return "[RUN_PYTEST_ERROR] timeout=120s"
         except Exception as e:
             return f"[RUN_PYTEST_ERROR] error={type(e).__name__}: {e}"
+
+class RunWSLCommandTool(BaseTool):
+    name: str = "run_wsl_command"
+    description: str = (
+        "WSL(Ubuntu)에서 명령을 실행합니다.\n"
+        "입력 형식: 'base_dir|command'\n"
+        "예) 'target_apps/darkhttpd|make'\n"
+        "예) 'target_apps/Tinyhttpd|cppcheck --enable=warning,style,performance,portability --quiet .'\n"
+        "예) 'target_apps/Tinyhttpd|lizard -l c -C 15 .'\n"
+    )
+
+    def _run(self, data: str = "") -> str:
+        try:
+            if "|" not in (data or ""):
+                return "[RUN_WSL_COMMAND_ERROR] format must be 'base_dir|command'"
+
+            base_dir_raw, cmd_raw = data.split("|", 1)
+            base_dir = os.path.abspath(base_dir_raw.strip())
+            cmd = (cmd_raw or "").strip()
+
+            if not os.path.isdir(base_dir):
+                return f"[RUN_WSL_COMMAND_ERROR] base_dir_not_found={base_dir}"
+
+            # Windows path -> WSL path
+            wslpath = subprocess.run(
+                ["wsl", "wslpath", "-a", base_dir],
+                capture_output=True,
+                text=True,
+                timeout=10,
+                shell=False,
+            )
+            if wslpath.returncode != 0:
+                return (
+                    "[RUN_WSL_COMMAND_ERROR] wslpath_failed\n"
+                    f"EXIT_CODE: {wslpath.returncode}\n"
+                    f"STDOUT:\n{wslpath.stdout}\n"
+                    f"STDERR:\n{wslpath.stderr}\n"
+                )
+
+            wsl_dir = (wslpath.stdout or "").strip()
+            wsl_cmd = f'cd "{wsl_dir}" && {cmd}'
+
+            result = subprocess.run(
+                ["wsl", "bash", "-lc", wsl_cmd],
+                capture_output=True,
+                text=True,
+                timeout=180,
+                shell=False,
+            )
+
+            return (
+                f"CWD_WIN: {base_dir}\n"
+                f"CWD_WSL: {wsl_dir}\n"
+                f"CMD: {cmd}\n"
+                f"EXIT_CODE: {result.returncode}\n"
+                f"STDOUT:\n{result.stdout}\n"
+                f"STDERR:\n{result.stderr}\n"
+            )
+
+        except subprocess.TimeoutExpired:
+            return "[RUN_WSL_COMMAND_TIMEOUT] timeout=180s"
+        except Exception as e:
+            return f"[RUN_WSL_COMMAND_ERROR] {type(e).__name__}: {e}"
