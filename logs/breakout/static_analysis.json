@@ -1,0 +1,49 @@
+```
+[
+    {
+        "id": "Maintainability.FunctionLOC",
+        "quality_feature": "Maintainability",
+        "decision_rule": "max(function_loc) <= 50",
+        "measurement_method": "AST: end_lineno - lineno + 1 per FunctionDef",
+        "measured": {"max_loc": 42, "file": "assets.py", "function": "load_tileset"},
+        "final_judgment": "Pass",
+        "data_evidence": "The maximum LOC of function 'load_tileset' in 'assets.py' is 42, which is less than 50."
+    },
+    {
+        "id": "Maintainability.MainLoopComplexity",
+        "quality_feature": "Maintainability",
+        "decision_rule": "branch_count<=25 AND nesting_depth<=4 AND cyclomatic_proxy<=20",
+        "measurement_method": "AST: analyze largest top-level While node",
+        "measured": {"branch_count": 12, "nesting_depth": 2, "cyclomatic_proxy": 10, "file": "main.py"},
+        "final_judgment": "Pass",
+        "data_evidence": "The branch count is 12, nesting depth is 2, and cyclomatic complexity is 10 in 'main.py' main loop."
+    },
+    {
+        "id": "PerformanceEfficiency.TimeBehaviour",
+        "quality_feature": "PerformanceEfficiency",
+        "decision_rule": "resolved_fps >= 30",
+        "measurement_method": "AST: resolve clock.tick(arg)",
+        "measured": {"min_resolved_fps": 60, "source": "clock.tick(60)", "file": "main.py"},
+        "final_judgment": "Pass",
+        "data_evidence": "The resolved FPS is 60 from 'clock.tick(60)' in 'main.py', which meets the required minimum of 30."
+    },
+    {
+        "id": "Reliability.FaultTolerance.ResourceLoading",
+        "quality_feature": "Reliability",
+        "decision_rule": "all resource loading calls must be within try/except",
+        "measurement_method": "AST: check try scope",
+        "measured": {"unprotected_calls": 1, "examples": ["assets.py:load_tileset"]},
+        "final_judgment": "Fail",
+        "data_evidence": "The function 'load_tileset' in 'assets.py' does not have try/except around resource loading."
+    },
+    {
+        "id": "FunctionalSuitability.StateTransitionValidation.ExitSignals",
+        "quality_feature": "FunctionalSuitability",
+        "decision_rule": "at least one exit signal exists",
+        "measurement_method": "Text scan: pygame.QUIT, sys.exit",
+        "measured": {"patterns": ["pygame.QUIT"], "file": "main.py"},
+        "final_judgment": "Pass",
+        "data_evidence": "The exit signal 'pygame.QUIT' is present in 'main.py'."
+    }
+]
+```

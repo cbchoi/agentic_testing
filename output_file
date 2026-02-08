@@ -1,0 +1,13 @@
+{"exit_code": 1, "stdout": "F [100%]
+================================== FAILURES ===================================
+___________________________ test_http_server_smoke ____________________________
+
+    def test_http_server_smoke():
+        TARGET_DIR = resolve_target_dir()
+        try:
+            run_command([\"make\"], cwd=TARGET_DIR)
+>           server_process = start_process([\"./darkhttpd\"], cwd=TARGET_DIR)
+
+tests\	est_quality_check.py:8: 
+
+" , "stderr": ""}

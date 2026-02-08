@@ -1,0 +1,112 @@
+{
+  "standard": "ISO/IEC 25010",
+  "generated_at": "2026-02-04T18:04:36.699011+00:00",
+  "summary": {
+    "score": 0.85,
+    "grade": "우수",
+    "overall_pass": false,
+    "passed_weight": 0.85,
+    "total_weight": 1.0
+  },
+  "characteristics": [
+    {
+      "id": "Maintainability.FunctionLOC",
+      "type": "static",
+      "characteristic": "Maintainability",
+      "metric": null,
+      "measured": "The maximum LOC of function 'load_tileset' in 'assets.py' is 42, which is less than 50.",
+      "rule": "max(function_loc) <= 50",
+      "method": "AST: end_lineno - lineno + 1 per FunctionDef",
+      "pass": true,
+      "evidence": {
+        "verification_target": null
+      },
+      "weight": 0.25
+    },
+    {
+      "id": "Maintainability.MainLoopComplexity",
+      "type": "static",
+      "characteristic": "Maintainability",
+      "metric": null,
+      "measured": "The branch count is 12, nesting depth is 2, and cyclomatic complexity is 10 in 'main.py' main loop.",
+      "rule": "branch_count<=25 AND nesting_depth<=4 AND cyclomatic_proxy<=20",
+      "method": "AST: analyze largest top-level While node",
+      "pass": true,
+      "evidence": {
+        "verification_target": null
+      },
+      "weight": 0.15
+    },
+    {
+      "id": "PerformanceEfficiency.TimeBehaviour",
+      "type": "static",
+      "characteristic": "PerformanceEfficiency",
+      "metric": null,
+      "measured": "The resolved FPS is 60 from 'clock.tick(60)' in 'main.py', which meets the required minimum of 30.",
+      "rule": "resolved_fps >= 30",
+      "method": "AST: resolve clock.tick(arg)",
+      "pass": true,
+      "evidence": {
+        "verification_target": null
+      },
+      "weight": 0.25
+    },
+    {
+      "id": "Reliability.FaultTolerance.ResourceLoading",
+      "type": "static",
+      "characteristic": "Reliability",
+      "metric": null,
+      "measured": "The function 'load_tileset' in 'assets.py' does not have try/except around resource loading.",
+      "rule": "all resource loading calls must be within try/except",
+      "method": "AST: check try scope",
+      "pass": false,
+      "evidence": {
+        "verification_target": null
+      },
+      "weight": 0.15,
+      "failure_type": "SYSTEM_DEFECT",
+      "responsibility": "TARGET_SYSTEM",
+      "failure_reason": "Failed the decision rule."
+    },
+    {
+      "id": "FunctionalSuitability.StateTransitionValidation.ExitSignals",
+      "type": "static",
+      "characteristic": "FunctionalSuitability",
+      "metric": null,
+      "measured": "The exit signal 'pygame.QUIT' is present in 'main.py'.",
+      "rule": "at least one exit signal exists",
+      "method": "Text scan: pygame.QUIT, sys.exit",
+      "pass": true,
+      "evidence": {
+        "verification_target": null
+      },
+      "weight": 0.2
+    },
+    {
+      "id": "TestExecution.PytestRun",
+      "type": "run",
+      "characteristic": "TestExecution",
+      "metric": "pytest_exit_code",
+      "measured": {
+        "exit_code": 1
+      },
+      "rule": "pytest exit code must be 0",
+      "method": "PYTEST",
+      "pass": false,
+      "weight": 0.0,
+      "evidence": {
+        "stdout_tail": "F                                                                        [100%]\n================================== FAILURES ===================================\n______________________________ test_pygame_entry ______________________________\n\ndef test_pygame_entry():\n    TARGET_DIR = resolve_target_dir()\n    entry = find_pygame_entrypoint(TARGET_DIR)\n\n    assert entry is not None, \"No Pygame entry point found\"\n\n    exit_code, stdout, stderr = run_command3(\n        [\"python\", str(entry)], cwd=TARGET_DIR, timeout_sec=5\n    )\n\n    if exit_code == 0 or exit_code == 124:\n        assert \"Traceback\" not in stderr and \"Error\" not in stderr, f\"Error in execution: {stderr}\"\n    else:\n        pytest.fail(f\"Process exited with code {exit_code}, stdout: {stdout}, stderr: {stderr}\")\nE           Failed: Process exited with code 1, stdout: , stderr: Traceback (most recent call last):\nE             File \"C:\\Users\\최예진\\Desktop\\My_Agentic_QA\\target_apps\\breakout\\main.py\", line 1, in <module>\nE               import pygame, math, random, settings, assets\nE           ModuleNotFoundError: No module named 'pygame'\n\ntests/test_quality_check.py:18: Failed\n=========================== short test summary info ===========================\nFAILED tests/test_quality_check.py::test_pygame_entry - Failed: Process exite...\n1 failed in 0.14s",
+        "stderr_tail": ""
+      },
+      "failure_type": "ENVIRONMENT_DEPENDENCY_MISSING",
+      "responsibility": "EXECUTION_ENVIRONMENT",
+      "failure_reason": "Pygame dependency is missing (or subprocess used a different Python without pygame)."
+    }
+  ],
+  "run_log": {
+    "exit_code": 1,
+    "stdout": "F                                                                        [100%]\n================================== FAILURES ===================================\n______________________________ test_pygame_entry ______________________________\n\ndef test_pygame_entry():\n    TARGET_DIR = resolve_target_dir()\n    entry = find_pygame_entrypoint(TARGET_DIR)\n\n    assert entry is not None, \"No Pygame entry point found\"\n\n    exit_code, stdout, stderr = run_command3(\n        [\"python\", str(entry)], cwd=TARGET_DIR, timeout_sec=5\n    )\n\n    if exit_code == 0 or exit_code == 124:\n        assert \"Traceback\" not in stderr and \"Error\" not in stderr, f\"Error in execution: {stderr}\"\n    else:\n        pytest.fail(f\"Process exited with code {exit_code}, stdout: {stdout}, stderr: {stderr}\")\nE           Failed: Process exited with code 1, stdout: , stderr: Traceback (most recent call last):\nE             File \"C:\\Users\\최예진\\Desktop\\My_Agentic_QA\\target_apps\\breakout\\main.py\", line 1, in <module>\nE               import pygame, math, random, settings, assets\nE           ModuleNotFoundError: No module named 'pygame'\n\ntests/test_quality_check.py:18: Failed\n=========================== short test summary info ===========================\nFAILED tests/test_quality_check.py::test_pygame_entry - Failed: Process exite...\n1 failed in 0.14s",
+    "stderr": ""
+  },
+  "target_dir": "target_apps\\breakout"
+}

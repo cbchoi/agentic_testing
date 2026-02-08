@@ -1,0 +1,47 @@
+[
+    {
+        "id": "Maintainability.FunctionLOC",
+        "quality_feature": "Modularity",
+        "decision_rule": "max(function_loc) <= 50",
+        "measurement_method": "AST: end_lineno - lineno + 1 per FunctionDef",
+        "measured": {"max_loc": 40, "file": "flappy.py", "function": "start"},
+        "final_judgment": "Pass",
+        "data_evidence": "Max LOC of functions in flappy.py is 40."
+    },
+    {
+        "id": "Maintainability.MainLoopComplexity",
+        "quality_feature": "Analysability",
+        "decision_rule": "branch_count <= 25 AND nesting_depth <= 4 AND cyclomatic_proxy <= 20",
+        "measurement_method": "AST: analyze largest top-level While node",
+        "measured": {"branch_count": 10, "nesting_depth": 3, "cyclomatic_proxy": 12, "file": "flappy.py"},
+        "final_judgment": "Pass",
+        "data_evidence": "The main loop in flappy.py has 10 branches, depth of 3, and cyclomatic complexity of 12."
+    },
+    {
+        "id": "PerformanceEfficiency.TimeBehaviour",
+        "quality_feature": "TimeBehaviour",
+        "decision_rule": "resolved_fps >= 30",
+        "measurement_method": "AST: resolve clock.tick(arg) where arg is constant or traced assignment",
+        "measured": {"min_resolved_fps": 30, "source": "self.config.fps", "file": "flappy.py"},
+        "final_judgment": "Pass",
+        "data_evidence": "The FPS is set to 30 in the GameConfig class."
+    },
+    {
+        "id": "Reliability.FaultTolerance.ResourceLoading",
+        "quality_feature": "FaultTolerance",
+        "decision_rule": "all resource loading calls must be within try/except",
+        "measurement_method": "AST: detect pygame.image.load and check try scope",
+        "measured": {"unprotected_calls": 2, "examples": ["src/utils/images.py:__init__", "src/utils/sounds.py:__init__"]},
+        "final_judgment": "Fail",
+        "data_evidence": "There are 2 resource loading calls that are not protected by try/except."
+    },
+    {
+        "id": "FunctionalSuitability.StateTransitionValidation.ExitSignals",
+        "quality_feature": "StateTransitionValidation",
+        "decision_rule": "at least one exit signal exists",
+        "measurement_method": "Text scan: pygame.QUIT, sys.exit, running=False, quit()",
+        "measured": {"patterns": ["pygame.quit()", "sys.exit()"], "file": "flappy.py"},
+        "final_judgment": "Pass",
+        "data_evidence": "Exit signals are implemented in the check_quit_event method."
+    }
+]

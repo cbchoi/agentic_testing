@@ -1,0 +1,81 @@
+{
+  "standard": "ISO/IEC 25010",
+  "generated_at": "2026-02-04T18:40:23.003123+00:00",
+  "summary": {
+    "score": 0.0,
+    "grade": "미흡",
+    "overall_pass": false,
+    "passed_weight": 0.0,
+    "total_weight": 0.4
+  },
+  "characteristics": [
+    {
+      "id": "UNKNOWN::Unknown",
+      "type": "static",
+      "characteristic": null,
+      "metric": null,
+      "measured": null,
+      "rule": null,
+      "method": null,
+      "pass": null,
+      "evidence": {
+        "verification_target": null
+      },
+      "weight": 0,
+      "failure_type": "TEST_ASSUMPTION_VIOLATION",
+      "responsibility": "QA_AGENT",
+      "failure_reason": "Port/listen assumption mismatch (server may be running on a different port or needs args)."
+    },
+    {
+      "id": "TestExecution.PytestRun",
+      "type": "run",
+      "characteristic": "TestExecution",
+      "metric": "pytest_exit_code",
+      "measured": {
+        "exit_code": 1
+      },
+      "rule": "pytest exit code must be 0",
+      "method": "PYTEST",
+      "pass": false,
+      "weight": 0.0,
+      "evidence": {
+        "stdout_tail": "trip():\n                    lines.append(\"[wsl:netstat]\")\n                    lines.append(r2.stdout.strip())\n            except Exception:\n                pass\n    \n            if pid is not None:\n                lines.append(f\"[server pid] {pid}\")\n            if _LAST_SERVER_EXE:\n                lines.append(f\"[server exe] {_LAST_SERVER_EXE}\")\n    \n            return \"\\n\".join(lines).strip()\n    \n        while time.time() - start < timeout_sec:\n            # 1) server died => fail fast\n            if _LAST_SERVER_HANDLE is not None:\n                popen = getattr(_LAST_SERVER_HANDLE, \"popen\", None)\n                if popen is not None and popen.poll() is not None:\n                    try:\n                        out, err = popen.communicate(timeout=1)\n                    except Exception:\n                        out, err = \"\", \"\"\n                    raise RuntimeError(\n                        \"server process exited before listening\\n\"\n                        f\"exe={_LAST_SERVER_EXE}\\n\"\n                        f\"stdout={out}\\n\"\n                        f\"stderr={err}\\n\"\n                    )\n    \n            # 2) check only requested port\n            try:\n                with socket.create_connection((host, port), timeout=0.5):\n                    return True\n            except OSError as e:\n                last_err = e\n    \n            time.sleep(0.2)\n    \n        diag = _best_effort_listen_diag()\n        diag = (\"\\n\" + diag) if diag else \"\"\n    \n>       raise RuntimeError(\n            f\"wait_for_tcp timeout after {timeout_sec}s: {host}:{port} not listening (last_err={last_err}){diag}\"\n        )\nE       RuntimeError: wait_for_tcp timeout after 15s: 127.0.0.1:8080 not listening (last_err=timed out)\nE       [server pid] 27968\nE       [server exe] httpd\n\ntests\\_harness.py:461: RuntimeError\n=========================== short test summary info ===========================\nFAILED tests/test_quality_check.py::test_http_server_smoke - RuntimeError: wa...\n1 failed in 19.98s\n",
+        "stderr_tail": ""
+      },
+      "failure_type": "TEST_ASSUMPTION_VIOLATION",
+      "responsibility": "QA_AGENT",
+      "failure_reason": "Port/listen assumption mismatch (server may be running on a different port or needs args)."
+    },
+    {
+      "id": "FunctionalSuitability.HttpBasic",
+      "metric": "pytest_passed_failed",
+      "measured": {
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0
+      },
+      "rule": "failed == 0 AND passed >= 1",
+      "method": "PYTEST: parse passed/failed from pytest output",
+      "pass": false,
+      "evidence": {
+        "pytest_counts": {
+          "passed": 0,
+          "failed": 1,
+          "skipped": 0
+        },
+        "stdout_tail": "trip():\n                    lines.append(\"[wsl:netstat]\")\n                    lines.append(r2.stdout.strip())\n            except Exception:\n                pass\n    \n            if pid is not None:\n                lines.append(f\"[server pid] {pid}\")\n            if _LAST_SERVER_EXE:\n                lines.append(f\"[server exe] {_LAST_SERVER_EXE}\")\n    \n            return \"\\n\".join(lines).strip()\n    \n        while time.time() - start < timeout_sec:\n            # 1) server died => fail fast\n            if _LAST_SERVER_HANDLE is not None:\n                popen = getattr(_LAST_SERVER_HANDLE, \"popen\", None)\n                if popen is not None and popen.poll() is not None:\n                    try:\n                        out, err = popen.communicate(timeout=1)\n                    except Exception:\n                        out, err = \"\", \"\"\n                    raise RuntimeError(\n                        \"server process exited before listening\\n\"\n                        f\"exe={_LAST_SERVER_EXE}\\n\"\n                        f\"stdout={out}\\n\"\n                        f\"stderr={err}\\n\"\n                    )\n    \n            # 2) check only requested port\n            try:\n                with socket.create_connection((host, port), timeout=0.5):\n                    return True\n            except OSError as e:\n                last_err = e\n    \n            time.sleep(0.2)\n    \n        diag = _best_effort_listen_diag()\n        diag = (\"\\n\" + diag) if diag else \"\"\n    \n>       raise RuntimeError(\n            f\"wait_for_tcp timeout after {timeout_sec}s: {host}:{port} not listening (last_err={last_err}){diag}\"\n        )\nE       RuntimeError: wait_for_tcp timeout after 15s: 127.0.0.1:8080 not listening (last_err=timed out)\nE       [server pid] 27968\nE       [server exe] httpd\n\ntests\\_harness.py:461: RuntimeError\n=========================== short test summary info ===========================\nFAILED tests/test_quality_check.py::test_http_server_smoke - RuntimeError: wa...\n1 failed in 19.98s\n",
+        "stderr_tail": ""
+      },
+      "weight": 0.4,
+      "failure_type": "TEST_ASSUMPTION_VIOLATION",
+      "responsibility": "QA_AGENT",
+      "failure_reason": "Port/listen assumption mismatch (server may be running on a different port or needs args)."
+    }
+  ],
+  "run_log": {
+    "exit_code": 1,
+    "stdout": "F                                                                        [100%]\n================================== FAILURES ===================================\n___________________________ test_http_server_smoke ____________________________\n\n    def test_http_server_smoke():\n        target_dir = resolve_target_dir()\n        try:\n            run_command([\"make\"], cwd=target_dir)\n            server_handle = start_process([\"./httpd\"], cwd=target_dir)\n>           wait_for_tcp(8080)\n\ntests\\test_quality_check.py:8: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n\ntimeout_sec = 15, args = (8080,), host = '127.0.0.1', start = 1770230296.6752868\n\n    def wait_for_tcp(*args, timeout_sec: int = 15) -> bool:\n        \"\"\"\n        - wait_for_tcp(8080)\n        - wait_for_tcp(\"127.0.0.1\", 8080)\n    \n        Behavior:\n        - If server process dies => fail fast with stdout/stderr\n        - Only checks the requested port (no fallback ports)\n        - On timeout, attach WSL/Linux listening diagnostics (ss/netstat) + pid\n        \"\"\"\n        global _LAST_SERVER_HANDLE, _LAST_SERVER_EXE\n    \n        if len(args) == 1:\n            host, port = \"127.0.0.1\", int(args[0])\n        elif len(args) == 2:\n            host, port = str(args[0]), int(args[1])\n        else:\n            raise TypeError(\"wait_for_tcp expects (port) or (host, port)\")\n    \n        start = time.time()\n        last_err = None\n    \n        def _best_effort_listen_diag() -> str:\n            \"\"\"\n            If running under WSL, show whether anything is listening on :port.\n            Works even when stdout/stderr from the server is empty.\n            \"\"\"\n            pid = None\n            if _LAST_SERVER_HANDLE is not None:\n                popen = getattr(_LAST_SERVER_HANDLE, \"popen\", None)\n                if popen is not None:\n                    pid = getattr(popen, \"pid\", None)\n    \n            # Prefer ss, fallback to netstat\n            # Note: We intentionally run via WSL to inspect Linux-side sockets.\n            lines = []\n            try:\n                # ss output (Linux)\n                r1 = run_command([\"wsl\", \"--\", \"bash\", \"-lc\", f\"ss -ltnp 2>/dev/null | grep ':{port} ' || true\"], cwd=None, timeout_sec=3)\n                if r1.stdout.strip():\n                    lines.append(\"[wsl:ss]\")\n                    lines.append(r1.stdout.strip())\n            except Exception:\n                pass\n    \n            try:\n                r2 = run_command([\"wsl\", \"--\", \"bash\", \"-lc\", f\"netstat -ltnp 2>/dev/null | grep ':{port} ' || true\"], cwd=None, timeout_sec=3)\n                if r2.stdout.strip():\n                    lines.append(\"[wsl:netstat]\")\n                    lines.append(r2.stdout.strip())\n            except Exception:\n                pass\n    \n            if pid is not None:\n                lines.append(f\"[server pid] {pid}\")\n            if _LAST_SERVER_EXE:\n                lines.append(f\"[server exe] {_LAST_SERVER_EXE}\")\n    \n            return \"\\n\".join(lines).strip()\n    \n        while time.time() - start < timeout_sec:\n            # 1) server died => fail fast\n            if _LAST_SERVER_HANDLE is not None:\n                popen = getattr(_LAST_SERVER_HANDLE, \"popen\", None)\n                if popen is not None and popen.poll() is not None:\n                    try:\n                        out, err = popen.communicate(timeout=1)\n                    except Exception:\n                        out, err = \"\", \"\"\n                    raise RuntimeError(\n                        \"server process exited before listening\\n\"\n                        f\"exe={_LAST_SERVER_EXE}\\n\"\n                        f\"stdout={out}\\n\"\n                        f\"stderr={err}\\n\"\n                    )\n    \n            # 2) check only requested port\n            try:\n                with socket.create_connection((host, port), timeout=0.5):\n                    return True\n            except OSError as e:\n                last_err = e\n    \n            time.sleep(0.2)\n    \n        diag = _best_effort_listen_diag()\n        diag = (\"\\n\" + diag) if diag else \"\"\n    \n>       raise RuntimeError(\n            f\"wait_for_tcp timeout after {timeout_sec}s: {host}:{port} not listening (last_err={last_err}){diag}\"\n        )\nE       RuntimeError: wait_for_tcp timeout after 15s: 127.0.0.1:8080 not listening (last_err=timed out)\nE       [server pid] 27968\nE       [server exe] httpd\n\ntests\\_harness.py:461: RuntimeError\n=========================== short test summary info ===========================\nFAILED tests/test_quality_check.py::test_http_server_smoke - RuntimeError: wa...\n1 failed in 19.98s\n",
+    "stderr": ""
+  },
+  "target_dir": "target_apps\\Tinyhttpd"
+}
