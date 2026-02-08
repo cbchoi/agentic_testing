@@ -1,0 +1,47 @@
+[
+    {
+        "id": "Maintainability.FunctionLOC",
+        "quality_feature": "Maintainability",
+        "decision_rule": "max(function_loc) <= 50 for all functions",
+        "measurement_method": "AST: end_lineno - lineno + 1 per FunctionDef",
+        "measured": {"max_loc": 38, "file": "src/entities/player.py", "function": "__init__"},
+        "final_judgment": "Pass",
+        "data_evidence": "Max LOC found in src/entities/player.py, function __init__ is 38."
+    },
+    {
+        "id": "Maintainability.MainLoopComplexity",
+        "quality_feature": "Maintainability",
+        "decision_rule": "branch_count <= 25 AND nesting_depth <= 4 AND cyclomatic_proxy <= 20",
+        "measurement_method": "AST: analyze largest top-level While node",
+        "measured": {"branch_count": 12, "nesting_depth": 3, "cyclomatic_proxy": 11, "file": "src/flappy.py"},
+        "final_judgment": "Pass",
+        "data_evidence": "Main loop in src/flappy.py shows a complexity count of 12 branches, 3 nesting depth, and 11 cyclomatic complexity."
+    },
+    {
+        "id": "PerformanceEfficiency.TimeBehaviour",
+        "quality_feature": "Performance Efficiency",
+        "decision_rule": "resolved_fps >= 30",
+        "measurement_method": "AST: resolve clock.tick(arg)",
+        "measured": {"min_resolved_fps": 30, "source": "self.config.fps in src/flappy.py", "file": "src/flappy.py"},
+        "final_judgment": "Pass",
+        "data_evidence": "Resolved FPS of 30 from src/flappy.py where self.config.fps is assigned to 30."
+    },
+    {
+        "id": "Reliability.FaultTolerance.ResourceLoading",
+        "quality_feature": "Reliability",
+        "decision_rule": "all resource loading calls must be within try/except",
+        "measurement_method": "AST: detect pygame.image.load / pygame.mixer.Sound / open(...) and check try scope",
+        "measured": {"unprotected_calls": 1, "examples": ["src/utils/sounds.py:__init__"]},
+        "final_judgment": "Fail",
+        "data_evidence": "Found 1 unprotected resource loading call in src/utils/sounds.py:__init__."
+    },
+    {
+        "id": "FunctionalSuitability.StateTransitionValidation.ExitSignals",
+        "quality_feature": "Functional Suitability",
+        "decision_rule": "at least one exit signal exists",
+        "measurement_method": "Text scan: pygame.QUIT, sys.exit, running=False, quit() patterns",
+        "measured": {"patterns": ["pygame.quit()", "sys.exit()"], "file": "src/flappy.py"},
+        "final_judgment": "Pass",
+        "data_evidence": "Found exit signals including pygame.quit() and sys.exit() in src/flappy.py."
+    }
+]

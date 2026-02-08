@@ -1,0 +1,123 @@
+{
+  "standard": "ISO/IEC 25010",
+  "generated_at": "2026-02-08T16:54:36.654191+00:00",
+  "summary": {
+    "score": 0.4286,
+    "grade": "미흡",
+    "overall_pass": false,
+    "passed_weight": 0.6,
+    "total_weight": 1.4
+  },
+  "characteristics": [
+    {
+      "id": "Maintainability.FunctionLOC",
+      "type": "static",
+      "characteristic": "Maintainability",
+      "metric": null,
+      "measured": "Function 'make_safe_url_old' has NLOC of 60, 'init_sockin' has NLOC of 77, 'parse_commandline' has NLOC of 167 which is greater than 80.",
+      "rule": "Function LOC must be <= 80",
+      "method": "LIZARD tool output",
+      "pass": false,
+      "evidence": {
+        "verification_target": null
+      },
+      "weight": 0.25,
+      "failure_type": "SYSTEM_DEFECT",
+      "responsibility": "TARGET_SYSTEM",
+      "failure_reason": "Failed the decision rule."
+    },
+    {
+      "id": "Maintainability.MainLoopComplexity",
+      "type": "static",
+      "characteristic": "Maintainability",
+      "metric": null,
+      "measured": "Function 'parse_commandline' has CCN of 65, 'init_sockin' has CCN of 26 which is greater than 20.",
+      "rule": "CCN must be <= 20",
+      "method": "LIZARD tool output",
+      "pass": false,
+      "evidence": {
+        "verification_target": null
+      },
+      "weight": 0.15,
+      "failure_type": "SYSTEM_DEFECT",
+      "responsibility": "TARGET_SYSTEM",
+      "failure_reason": "Failed the decision rule."
+    },
+    {
+      "id": "Reliability.FaultTolerance.ResourceLoading",
+      "type": "static",
+      "characteristic": "Reliability",
+      "metric": null,
+      "measured": "No resource loading calls detected in current analysis.",
+      "rule": "All resource calls must be within try/except",
+      "method": "yet to be defined",
+      "pass": true,
+      "evidence": {
+        "verification_target": null
+      },
+      "weight": 0.2
+    },
+    {
+      "id": "FunctionalSuitability.HttpBasic",
+      "type": "static",
+      "characteristic": "FunctionalSuitability",
+      "metric": null,
+      "measured": "Will be evaluated by pytest execution output.",
+      "rule": "Dynamic tests required for validation",
+      "method": "Will be evaluated by pytest execution output",
+      "pass": false,
+      "evidence": {
+        "verification_target": null
+      },
+      "weight": 0.4,
+      "failure_type": "SYSTEM_DEFECT",
+      "responsibility": "TARGET_SYSTEM",
+      "failure_reason": "Failed the decision rule."
+    },
+    {
+      "id": "TestExecution.PytestRun",
+      "type": "run",
+      "characteristic": "TestExecution",
+      "metric": "pytest_exit_code",
+      "measured": {
+        "exit_code": 0
+      },
+      "rule": "pytest exit code must be 0",
+      "method": "PYTEST",
+      "pass": true,
+      "weight": 0.0,
+      "evidence": {
+        "stdout_tail": ".                                                                        [100%]\n1 passed in 4.34s\n",
+        "stderr_tail": ""
+      }
+    },
+    {
+      "id": "FunctionalSuitability.HttpBasic",
+      "metric": "pytest_passed_failed",
+      "measured": {
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "rule": "failed == 0 AND passed >= 1",
+      "method": "PYTEST: parse passed/failed from pytest output",
+      "pass": true,
+      "evidence": {
+        "pytest_counts": {
+          "passed": 1,
+          "failed": 0,
+          "skipped": 0
+        },
+        "stdout_tail": ".                                                                        [100%]\n1 passed in 4.34s\n",
+        "stderr_tail": ""
+      },
+      "weight": 0.4
+    }
+  ],
+  "run_log": {
+    "exit_code": 0,
+    "stdout": ".                                                                        [100%]\n1 passed in 4.34s\n",
+    "stderr": ""
+  },
+  "target_dir": "target_apps\\darkhttpd"
+}
