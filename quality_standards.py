@@ -79,7 +79,8 @@ class ISO25010Standard:
     def get_thresholds(self, domain: str = "game") -> Dict[str, Any]:
         return {
             "game": {"fps_min": 30, "loc_limit": 50, "complexity_limit": 15},
-            "web_api": {"response_time_ms": 500, "loc_limit": 30, "complexity_limit": 10}
+            "web_api": {"response_time_ms": 500, "loc_limit": 30, "complexity_limit": 10},
+            "c_http_server": {"loc_limit": 80, "complexity_limit": 20, "cppcheck_max_warnings": 0},
         }.get(domain, {"fps_min": 30, "loc_limit": 50, "complexity_limit": 15})
 
 # 글로벌 인스턴스 생성
@@ -100,6 +101,45 @@ def get_quality_prompt(project_type="game"):
 
 def get_quality_spec(project_type: str = "game") -> Dict[str, Any]:
     selected = iso_spec.get_thresholds(project_type)
+
+    if project_type == "c_http_server":
+        return {
+            "domain": "c_http_server",
+            "thresholds": selected,
+            "checks": [
+                {
+                    "id": "Maintainability.FunctionLOC",
+                    "metric": "max(function_nloc)",
+                    "method": "LIZARD: parse function NLOC from lizard output",
+                    "rule": "function_nloc <= {loc_limit} for all functions",
+                    "weight": 0.25,
+                },
+                {
+                    "id": "Maintainability.MainLoopComplexity",
+                    "metric": "max(function_ccn)",
+                    "method": "LIZARD: parse CCN from lizard output",
+                    "rule": "function_ccn <= {complexity_limit} for all functions",
+                    "weight": 0.15,
+                },
+                {
+                    "id": "Reliability.FaultTolerance.ResourceLoading",
+                    "metric": "cppcheck_warning_count",
+                    "method": "CPPCHECK: count warnings in stderr/stdout",
+                    "rule": "cppcheck_warning_count <= {cppcheck_max_warnings}",
+                    "weight": 0.20,
+                },
+                {
+                    "id": "FunctionalSuitability.HttpBasic",
+                    "metric": "pytest_passed_failed",
+                    "method": "PYTEST: parse passed/failed from pytest output",
+                    "rule": "failed == 0 AND passed >= 1",
+                    "weight": 0.40,
+                },
+            ],
+        }
+
+    # default: game
     spec = dict(iso_spec.exec_spec)
+    spec["domain"] = "game"
     spec["thresholds"] = selected
     return spec

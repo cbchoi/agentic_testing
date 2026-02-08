@@ -1,0 +1,47 @@
+[
+    {
+        "id": "Maintainability.FunctionLOC",
+        "quality_feature": "Maintainability",
+        "decision_rule": "max(function_loc) <= 50",
+        "measurement_method": "AST로 FunctionDef 별 LOC 계산",
+        "measured": {"max_loc": 36, "file": "spaceinvaders.py", "function": "update"},
+        "final_judgment": "Pass",
+        "data_evidence": "최대 LOC는 36으로, 50 이하입니다."
+    },
+    {
+        "id": "Maintainability.MainLoopComplexity",
+        "quality_feature": "Maintainability",
+        "decision_rule": "branch_count <= 25 AND nesting_depth <= 4 AND cyclomatic_proxy <= 20",
+        "measurement_method": "최상위 While 루프의 branch_count, nesting_depth, cyclomatic_proxy 분석",
+        "measured": {"branch_count": 10, "nesting_depth": 3, "cyclomatic_proxy": 15, "file": "spaceinvaders.py"},
+        "final_judgment": "Pass",
+        "data_evidence": "branch_count는 10, nesting_depth는 3, cyclomatic_proxy는 15로 기준을 만족합니다."
+    },
+    {
+        "id": "PerformanceEfficiency.TimeBehaviour",
+        "quality_feature": "PerformanceEfficiency",
+        "decision_rule": "resolved_fps >= 30",
+        "measurement_method": "clock.tick() 또는 fps 상수에서 resolved_fps 추정",
+        "measured": {"min_resolved_fps": 60, "source": "clock.tick(60)", "file": "spaceinvaders.py"},
+        "final_judgment": "Pass",
+        "data_evidence": "resolved_fps는 60으로, 30 이상입니다."
+    },
+    {
+        "id": "Reliability.FaultTolerance.ResourceLoading",
+        "quality_feature": "Reliability",
+        "decision_rule": "모든 리소스 로딩 호출이 try/except 내부면 Pass",
+        "measurement_method": "pygame.image.load 및 pygame.mixer.Sound 호출 내부 try/except 검사",
+        "measured": {"unprotected_calls": 2, "examples": ["pygame.image.load", "pygame.mixer.Sound"]},
+        "final_judgment": "Fail",
+        "data_evidence": "리소스 로딩 호출 중 2개가 try/except 내부가 아닙니다."
+    },
+    {
+        "id": "FunctionalSuitability.StateTransitionValidation.ExitSignals",
+        "quality_feature": "FunctionalSuitability",
+        "decision_rule": "exit signal이 1개 이상 존재하면 Pass",
+        "measurement_method": "pygame.QUIT 및 sys.exit 패턴 검출",
+        "measured": {"patterns": ["pygame.QUIT", "sys.exit"], "file": "spaceinvaders.py"},
+        "final_judgment": "Pass",
+        "data_evidence": "exit signal 패턴으로 pygame.QUIT와 sys.exit가 발견되었습니다."
+    }
+]

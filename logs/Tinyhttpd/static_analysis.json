@@ -1,0 +1,38 @@
+[
+  {
+    "id": "Maintainability.FunctionLOC",
+    "quality_feature": "Maintainability",
+    "decision_rule": "FunctionLOC 최대값 <= 80",
+    "measurement_method": "Lizard tool 분석",
+    "measured": 84,
+    "final_judgment": "Fail",
+    "data_evidence": "Function 'accept_request' has 72 NLOC exceeding the limit."
+  },
+  {
+    "id": "Maintainability.MainLoopComplexity",
+    "quality_feature": "Maintainability",
+    "decision_rule": "MainLoopComplexity 최대값 <= 20",
+    "measurement_method": "Lizard tool 분석",
+    "measured": 24,
+    "final_judgment": "Fail",
+    "data_evidence": "Function 'accept_request' has a cyclomatic complexity of 24 exceeding the limit."
+  },
+  {
+    "id": "Reliability.FaultTolerance.ResourceLoading",
+    "quality_feature": "Reliability",
+    "decision_rule": "warning_count <= 0",
+    "measurement_method": "Cppcheck tool 분석",
+    "measured": 0,
+    "final_judgment": "Pass",
+    "data_evidence": "No warnings found in resource loading checks."
+  },
+  {
+    "id": "FunctionalSuitability.HttpBasic",
+    "quality_feature": "FunctionalSuitability",
+    "decision_rule": "측정 불가(동적 테스트에서 검증)",
+    "measurement_method": "Will be evaluated by pytest execution output",
+    "measured": {"passed": 0, "failed": 0},
+    "final_judgment": "Fail",
+    "data_evidence": "Will be evaluated by pytest execution output"
+  }
+]

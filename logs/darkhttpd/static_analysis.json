@@ -1,0 +1,38 @@
+[
+  {
+    "id": "Maintainability.FunctionLOC",
+    "quality_feature": "Maintainability",
+    "decision_rule": "Function LOC must be <= 80",
+    "measurement_method": "LIZARD tool output",
+    "measured": 2662,
+    "final_judgment": "Fail",
+    "data_evidence": "Function 'make_safe_url_old' has NLOC of 60, 'init_sockin' has NLOC of 77, 'parse_commandline' has NLOC of 167 which is greater than 80."
+  },
+  {
+    "id": "Maintainability.MainLoopComplexity",
+    "quality_feature": "Maintainability",
+    "decision_rule": "CCN must be <= 20",
+    "measurement_method": "LIZARD tool output",
+    "measured": 2662,
+    "final_judgment": "Fail",
+    "data_evidence": "Function 'parse_commandline' has CCN of 65, 'init_sockin' has CCN of 26 which is greater than 20."
+  },
+  {
+    "id": "Reliability.FaultTolerance.ResourceLoading",
+    "quality_feature": "Reliability",
+    "decision_rule": "All resource calls must be within try/except",
+    "measurement_method": "yet to be defined",
+    "measured": 0,
+    "final_judgment": "Pass",
+    "data_evidence": "No resource loading calls detected in current analysis."
+  },
+  {
+    "id": "FunctionalSuitability.HttpBasic",
+    "quality_feature": "FunctionalSuitability",
+    "decision_rule": "Dynamic tests required for validation",
+    "measurement_method": "Will be evaluated by pytest execution output",
+    "measured": {"passed": 0, "failed": 0},
+    "final_judgment": "Fail",
+    "data_evidence": "Will be evaluated by pytest execution output."
+  }
+]

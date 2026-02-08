@@ -1,0 +1,109 @@
+{
+  "standard": "ISO/IEC 25010",
+  "generated_at": "2026-02-08T16:29:59.248278+00:00",
+  "summary": {
+    "score": 0.85,
+    "grade": "우수",
+    "overall_pass": false,
+    "passed_weight": 0.85,
+    "total_weight": 1.0
+  },
+  "characteristics": [
+    {
+      "id": "Maintainability.FunctionLOC",
+      "type": "static",
+      "characteristic": "Maintainability",
+      "metric": null,
+      "measured": "최대 LOC는 36으로, 50 이하입니다.",
+      "rule": "max(function_loc) <= 50",
+      "method": "AST로 FunctionDef 별 LOC 계산",
+      "pass": true,
+      "evidence": {
+        "verification_target": null
+      },
+      "weight": 0.25
+    },
+    {
+      "id": "Maintainability.MainLoopComplexity",
+      "type": "static",
+      "characteristic": "Maintainability",
+      "metric": null,
+      "measured": "branch_count는 10, nesting_depth는 3, cyclomatic_proxy는 15로 기준을 만족합니다.",
+      "rule": "branch_count <= 25 AND nesting_depth <= 4 AND cyclomatic_proxy <= 20",
+      "method": "최상위 While 루프의 branch_count, nesting_depth, cyclomatic_proxy 분석",
+      "pass": true,
+      "evidence": {
+        "verification_target": null
+      },
+      "weight": 0.15
+    },
+    {
+      "id": "PerformanceEfficiency.TimeBehaviour",
+      "type": "static",
+      "characteristic": "PerformanceEfficiency",
+      "metric": null,
+      "measured": "resolved_fps는 60으로, 30 이상입니다.",
+      "rule": "resolved_fps >= 30",
+      "method": "clock.tick() 또는 fps 상수에서 resolved_fps 추정",
+      "pass": true,
+      "evidence": {
+        "verification_target": null
+      },
+      "weight": 0.25
+    },
+    {
+      "id": "Reliability.FaultTolerance.ResourceLoading",
+      "type": "static",
+      "characteristic": "Reliability",
+      "metric": null,
+      "measured": "리소스 로딩 호출 중 2개가 try/except 내부가 아닙니다.",
+      "rule": "모든 리소스 로딩 호출이 try/except 내부면 Pass",
+      "method": "pygame.image.load 및 pygame.mixer.Sound 호출 내부 try/except 검사",
+      "pass": false,
+      "evidence": {
+        "verification_target": null
+      },
+      "weight": 0.15,
+      "failure_type": "SYSTEM_DEFECT",
+      "responsibility": "TARGET_SYSTEM",
+      "failure_reason": "Failed the decision rule."
+    },
+    {
+      "id": "FunctionalSuitability.StateTransitionValidation.ExitSignals",
+      "type": "static",
+      "characteristic": "FunctionalSuitability",
+      "metric": null,
+      "measured": "exit signal 패턴으로 pygame.QUIT와 sys.exit가 발견되었습니다.",
+      "rule": "exit signal이 1개 이상 존재하면 Pass",
+      "method": "pygame.QUIT 및 sys.exit 패턴 검출",
+      "pass": true,
+      "evidence": {
+        "verification_target": null
+      },
+      "weight": 0.2
+    },
+    {
+      "id": "TestExecution.PytestRun",
+      "type": "run",
+      "characteristic": "TestExecution",
+      "metric": "pytest_exit_code",
+      "measured": {
+        "exit_code": 0
+      },
+      "rule": "pytest exit code must be 0",
+      "method": "PYTEST",
+      "pass": true,
+      "weight": 0.0,
+      "evidence": {
+        "stdout_tail": ".                                                                        [100%]\n1 passed in 5.06s\n",
+        "stderr_tail": ""
+      }
+    }
+  ],
+  "run_log": {
+    "exit_code": 0,
+    "stdout": ".                                                                        [100%]\n1 passed in 5.06s\n",
+    "stderr": ""
+  },
+  "target_dir": "target_apps\\space_invaders"
+}
