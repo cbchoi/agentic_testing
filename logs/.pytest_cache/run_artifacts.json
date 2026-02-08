@@ -1,1 +1,0 @@
-{"exit_code": 2, "stdout": "", "stderr": "[PREFLIGHT_FAIL] bad_file_header\nfile=test_quality_check.py\nhint=File must import 'from tests._harness import (...)' near the top (comments/docstring allowed).\nclassify=TEST_ARTIFACT_INVALID"}

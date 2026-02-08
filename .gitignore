@@ -7,16 +7,18 @@ __pycache__/
 *.pyc
 .DS_Store
 pro_apps/
+output_file
 
 # target_apps 전체는 무시
 target_apps/**
 
-# 하지만 tests 폴더는 경로를 열어줘야 예외가 적용됨
+# 예외 규칙이 적용되도록 디렉터리 경로를 열어줌
+!target_apps/
+!target_apps/**/
 !target_apps/**/tests/
-!target_apps/**/tests/**
 
-# tests 안에서는 전부 무시
+# tests 안은 전부 무시
 target_apps/**/tests/**
 
-# 단, harness만 다시 포함
+# 단, harness만 포함
 !target_apps/**/tests/_harness.py
